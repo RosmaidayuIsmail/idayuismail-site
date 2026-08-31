@@ -44,6 +44,7 @@
           />
           <HubDoorCard
             to="/portfolio"
+            external
             title="Portfolio"
             icon="i-heroicons-briefcase"
             description="My design work — projects, case studies, and the things I've made along the way."

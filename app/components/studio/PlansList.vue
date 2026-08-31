@@ -56,25 +56,31 @@
     </div>
 
     <UModal v-model:open="renameOpen" title="Rename plan" :ui="{ width: 'sm' }">
-      <div v-if="renaming" class="p-5 space-y-4">
-        <UInput v-model="renaming.name" placeholder="Plan name" size="lg" autofocus @keyup.enter="confirmRename" />
-        <div class="flex justify-end gap-2">
+      <template #body>
+        <div v-if="renaming" class="space-y-4">
+          <UInput v-model="renaming.name" placeholder="Plan name" size="lg" autofocus @keyup.enter="confirmRename" />
+        </div>
+      </template>
+      <template #footer>
+        <div v-if="renaming" class="flex justify-end gap-2">
           <UButton color="neutral" variant="soft" @click="renaming = null">Cancel</UButton>
           <UButton color="primary" @click="confirmRename">Save</UButton>
         </div>
-      </div>
+      </template>
     </UModal>
 
     <UModal v-model:open="deleteOpen" title="Delete plan?" :ui="{ width: 'sm' }">
-      <div v-if="deleting" class="p-5 space-y-4">
-        <p class="text-sm text-ink-900/70 dark:text-white/70">
+      <template #body>
+        <p v-if="deleting" class="text-sm text-ink-900/70 dark:text-white/70">
           "{{ deleting.name }}" will be gone for good. This can't be undone.
         </p>
-        <div class="flex justify-end gap-2">
+      </template>
+      <template #footer>
+        <div v-if="deleting" class="flex justify-end gap-2">
           <UButton color="neutral" variant="soft" @click="deleting = null">Keep it</UButton>
           <UButton color="error" @click="confirmDelete">Delete</UButton>
         </div>
-      </div>
+      </template>
     </UModal>
   </div>
 </template>

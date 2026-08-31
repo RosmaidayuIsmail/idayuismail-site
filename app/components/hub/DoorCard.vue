@@ -1,6 +1,7 @@
 <template>
   <NuxtLink
     :to="to"
+    :external="external"
     class="group block rounded-3xl border border-ink-900/10 dark:border-white/10 bg-white dark:bg-white/[0.03] p-7 shadow-sm hover-lift"
   >
     <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-5" :class="iconClass">
@@ -23,8 +24,10 @@ withDefaults(defineProps<{
   icon: string
   cta?: string
   iconClass?: string
+  external?: boolean
 }>(), {
   cta: 'Enter',
-  iconClass: 'bg-gold-400/15 text-gold-600 dark:text-gold-300'
+  iconClass: 'bg-gold-400/15 text-gold-600 dark:text-gold-300',
+  external: false
 })
 </script>
