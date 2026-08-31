@@ -5,6 +5,13 @@ export default defineNuxtConfig({
 
   modules: ['@nuxt/ui', '@vueuse/nuxt'],
 
+  // Hub and Home Studio default to light; wedding-platform routes force
+  // 'dark' from app/plugins/route-color-mode.ts.
+  colorMode: {
+    preference: 'light',
+    fallback: 'light'
+  },
+
   css: ['~/assets/css/main.css'],
 
   fonts: {
@@ -33,9 +40,9 @@ export default defineNuxtConfig({
   app: {
     head: {
       htmlAttrs: { lang: 'en' },
-      title: 'WeddingCard — Design your wedding invitation & manage RSVPs',
+      title: 'Idayu Ismail — Designer & Creator',
       meta: [
-        { name: 'description', content: 'Build a beautiful digital and printable wedding invitation, manage VIP and general guest lists, plan your wedding-day flow, and track RSVPs live.' },
+        { name: 'description', content: 'The personal home of Idayu Ismail: WeddingCard invitation platform, portfolio, and the Home Studio house designer.' },
         { name: 'theme-color', content: '#04101f' },
         { property: 'og:type', content: 'website' }
       ],

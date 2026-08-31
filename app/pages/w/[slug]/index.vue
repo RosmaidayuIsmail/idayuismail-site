@@ -8,7 +8,7 @@
     <div class="p-8 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 shadow-2xl">
       <UIcon name="i-heroicons-document-magnifying-glass" class="w-12 h-12 text-gold-300/50 mb-4 mx-auto" />
       <p class="text-xl font-display mb-6">We couldn't find that invitation.</p>
-      <UButton to="/" variant="soft" color="neutral" size="lg" class="rounded-full px-8">Return Home</UButton>
+      <UButton to="/weddingcard" variant="soft" color="neutral" size="lg" class="rounded-full px-8">Return Home</UButton>
     </div>
   </div>
 

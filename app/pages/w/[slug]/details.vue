@@ -6,7 +6,7 @@
   <div v-else-if="notFound || !wedding" class="min-h-screen invite-backdrop flex items-center justify-center text-white text-center px-6">
     <div class="p-8 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 shadow-2xl">
       <p class="text-xl font-display mb-4">We couldn't find that invitation.</p>
-      <UButton to="/" variant="soft" color="neutral" class="rounded-full">Go home</UButton>
+      <UButton to="/weddingcard" variant="soft" color="neutral" class="rounded-full">Go home</UButton>
     </div>
   </div>
 

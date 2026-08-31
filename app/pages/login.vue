@@ -4,7 +4,7 @@
 
     <div class="relative z-10 w-full max-w-sm animate-fade-up">
       <div class="text-center mb-6">
-        <NuxtLink to="/" class="inline-flex items-center gap-2">
+        <NuxtLink to="/weddingcard" class="inline-flex items-center gap-2">
           <UIcon name="i-heroicons-heart" class="w-5 h-5 text-gold-300" />
           <span class="font-display font-semibold text-gold-100">WeddingCard</span>
         </NuxtLink>
