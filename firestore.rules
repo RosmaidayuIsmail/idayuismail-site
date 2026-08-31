@@ -81,19 +81,24 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == weddingData.ownerUid;
     }
 
+    // This personal site has exactly one admin. Only the owner's email can
+    // ever create a user profile (see /users create below); everyone else
+    // is locked out even if they somehow obtain a Firebase Auth account.
+    function isSiteOwner() {
+      return isSignedIn() &&
+        request.auth.token.email == 'ismailrosmaidayu@gmail.com';
+    }
+
     match /users/{uid} {
       allow read: if isSignedIn() && (request.auth.uid == uid || isSuperAdmin());
-      // Public self-signup is closed (WeddingCard is now invitation-only -
-      // only the superadmin creates accounts/weddings). This still allows a
-      // brand-new Firebase Auth user to create their OWN first-time profile
-      // doc (so an existing/legacy 'couple' or 'vip' login keeps working
-      // exactly as before), but it can never be created with role
-      // 'superadmin', and a 'vip' profile can never be created already
-      // 'approved' - closing the privilege-escalation hole even for someone
-      // who bypasses the UI and calls the Firebase Auth SDK directly.
-      allow create: if isSignedIn() && request.auth.uid == uid &&
-        request.resource.data.role in ['couple', 'vip'] &&
-        (!('vipApprovalStatus' in request.resource.data) || request.resource.data.vipApprovalStatus != 'approved');
+      // This personal site is single-admin: ONLY the owner's email
+      // (ismailrosmaidayu@gmail.com, enforced by isSiteOwner()) may create
+      // a profile doc, and only as 'superadmin'. No one else - couple or
+      // VIP - can ever get an account here, even if they somehow obtain a
+      // Firebase Auth login, because their profile write is denied. The
+      // owner's profile is self-seeded on first sign-in by useAuth.ts.
+      allow create: if isSiteOwner() && request.auth.uid == uid &&
+        request.resource.data.role == 'superadmin';
       // A superadmin can update any profile (needed to approve/decline a
       // VIP request - see AdminVipApprovals.vue). Otherwise, a user can
       // only update their own profile, can't grant themselves the
@@ -109,7 +114,9 @@ service cloud.firestore {
 
     match /slugs/{slug} {
       allow read: if true; // needed to resolve /w/{slug} public pages
-      allow create: if isSignedIn();
+      // Slug reservations only happen alongside wedding creation, which is
+      // superadmin-only on this single-admin site - so this is too.
+      allow create: if isSuperAdmin();
       allow update, delete: if false;
     }
 

@@ -58,6 +58,15 @@ const readyPromise = new Promise<void>((resolve) => {
   readyResolve = resolve
 })
 
+// This personal site has exactly one admin. The owner's email self-seeds a
+// 'superadmin' profile on first sign-in (see loadProfile) and
+// firestore.rules restricts profile creation to this same email, so no one
+// else can ever get an account here. Mirrors the rule check exactly.
+const SITE_OWNER_EMAIL = 'ismailrosmaidayu@gmail.com'
+function isSiteOwnerEmail(email: string | null): boolean {
+  return (email ?? '').toLowerCase() === SITE_OWNER_EMAIL
+}
+
 async function loadProfile(user: User, db: ReturnType<typeof useFirebase>['db']) {
   if (!db) return
 
@@ -75,12 +84,15 @@ async function loadProfile(user: User, db: ReturnType<typeof useFirebase>['db'])
         vipApprovalStatus: data.vipApprovalStatus
       }
     } else {
-      // First sign-in \u2014 create their profile doc
+      // First sign-in \u2014 create their profile doc. This personal site
+      // has exactly one admin: the owner email below self-seeds as
+      // 'superadmin'; firestore.rules only ever lets this same email
+      // create a profile, so nobody else can get any account at all.
       const newProfile: UserProfile = {
         uid: user.uid,
         email: user.email,
         displayName: user.displayName,
-        role: 'couple'
+        role: isSiteOwnerEmail(user.email) ? 'superadmin' : 'couple'
       }
       await setDoc(ref, {
         email: newProfile.email,
@@ -104,7 +116,7 @@ async function loadProfile(user: User, db: ReturnType<typeof useFirebase>['db'])
       uid: user.uid,
       email: user.email,
       displayName: user.displayName,
-      role: 'couple'
+      role: isSiteOwnerEmail(user.email) ? 'superadmin' : 'couple'
     }
   }
 }
