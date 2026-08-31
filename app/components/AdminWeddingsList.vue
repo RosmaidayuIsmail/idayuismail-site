@@ -13,9 +13,9 @@
             <h2 class="font-display text-lg">RSVP Lists (your Google Drive)</h2>
             <p class="text-xs text-white/50 mt-0.5">
               <template v-if="adminDriveConnected">
-                Connected as <span class="text-white/80">{{ adminDriveEmail }}</span> - every wedding's guest list auto-syncs into your "RSVP Lists" folder whenever a guest RSVPs.
+                Connected as <span class="text-white/80">{{ adminDriveEmail }}</span> - every wedding's guest list auto-syncs into your "RSVP Lists (IdayuIsmail)" folder whenever a guest RSVPs.
               </template>
-              <template v-else>Connect your own Google Drive to automatically collect every wedding's guest list - new and existing - into one "RSVP Lists" folder here, updated whenever a guest RSVPs.</template>
+              <template v-else>Connect your own Google Drive to automatically collect every wedding's guest list - new and existing - into one "RSVP Lists (IdayuIsmail)" folder here, updated whenever a guest RSVPs.</template>
             </p>
           </div>
           <div class="ml-auto flex flex-wrap gap-2">

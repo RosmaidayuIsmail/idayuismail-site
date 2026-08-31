@@ -31,8 +31,10 @@ export const ADMIN_DRIVE_CONNECTION_ID = 'admin'
 
 // Top-level folder name (in the admin's own connected Drive) that every
 // wedding's guest-list exports sync into, one subfolder per wedding - see
-// server/utils/guest-sync.ts.
-export const RSVP_LISTS_FOLDER_NAME = 'RSVP Lists'
+// server/utils/guest-sync.ts. Suffixed with the site name because the same
+// Google account backs other sites that already use a plain "RSVP Lists"
+// folder; each site must sync into its own folder.
+export const RSVP_LISTS_FOLDER_NAME = 'RSVP Lists (IdayuIsmail)'
 
 export interface DriveConnectionDoc {
   weddingId: string
