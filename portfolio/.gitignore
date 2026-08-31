@@ -1,0 +1,16 @@
+node_modules
+dist
+.DS_Store
+*.local
+
+# secrets — never commit these
+.env
+.env.local
+.env.*.local
+
+# local SQLite fallback db (generated, not source)
+local.db
+*.db
+
+# Vercel
+.vercel

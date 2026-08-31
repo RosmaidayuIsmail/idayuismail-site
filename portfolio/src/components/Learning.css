@@ -1,0 +1,56 @@
+.learning { padding: 7rem 2rem; }
+
+.learning-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.4rem;
+  margin-bottom: 3rem;
+}
+.learning-card {
+  display: block;
+  padding: 2rem 1.6rem;
+  border-left: 2px solid var(--gold-dim);
+  background: var(--bg-panel);
+  color: inherit;
+  transition: background .25s ease, border-color .25s ease;
+}
+.learning-card:hover { background: #1f1c29; border-left-color: var(--gold); }
+.learning-card h3 { font-family: var(--serif); font-size: 1.25rem; font-weight: 600; margin-bottom: .5rem; }
+.learning-card p { font-size: .95rem; color: var(--muted); white-space: pre-line; }
+
+.cert-row {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+.cert-label {
+  font-family: var(--sans);
+  font-size: .75rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+}
+.cert-pills { display: flex; flex-wrap: wrap; gap: .6rem; }
+.cert-pill {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--sans);
+  font-size: .82rem;
+  color: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: .5rem 1rem;
+}
+.cert-pill .ruby-word { margin: 0; }
+
+@media (max-width: 1199px) and (min-width: 860px) {
+  .learning-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 859px) {
+  .learning { padding: 5rem 1.4rem; }
+  .learning-grid { grid-template-columns: 1fr; }
+  .cert-row { flex-direction: column; align-items: flex-start; gap: .8rem; }
+}

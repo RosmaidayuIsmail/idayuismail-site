@@ -1,0 +1,77 @@
+.moment-lightbox-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgba(10, 9, 14, .92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: moment-fade .2s ease;
+}
+@keyframes moment-fade { from { opacity: 0; } to { opacity: 1; } }
+
+.moment-lightbox {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  width: 100%;
+  max-width: 460px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.moment-lightbox-close {
+  position: absolute;
+  top: .8rem; right: .8rem;
+  z-index: 2;
+  background: rgba(16, 15, 23, .7);
+  border: none;
+  color: var(--cream);
+  border-radius: 50%;
+  width: 34px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+.moment-lightbox-close:hover { color: var(--gold); }
+
+.moment-lightbox-image img { width: 100%; display: block; max-height: 55vh; object-fit: cover; }
+
+.moment-lightbox-body { padding: 1.3rem 1.4rem 1.5rem; }
+.moment-lightbox-caption { color: var(--cream); font-size: 1rem; margin-bottom: .5rem; }
+.moment-lightbox-time { font-family: var(--sans); font-size: .72rem; color: var(--gold-dim); letter-spacing: .05em; display: block; margin-bottom: 1rem; }
+
+.moment-like-btn {
+  display: inline-flex; align-items: center; gap: .45rem;
+  background: none; border: 1px solid var(--border); color: var(--muted);
+  padding: .5rem 1rem; border-radius: 999px; cursor: pointer;
+  font-family: var(--sans); font-size: .85rem;
+  transition: color .2s ease, border-color .2s ease, transform .15s ease;
+  margin-bottom: 1.3rem;
+}
+.moment-like-btn:hover { border-color: var(--seal); }
+.moment-like-btn.liked { color: var(--seal); border-color: var(--seal); }
+.moment-like-btn.liked svg { transform: scale(1.1); }
+
+.moment-comments { display: flex; flex-direction: column; gap: .7rem; margin-bottom: 1.2rem; max-height: 220px; overflow-y: auto; }
+.moment-comment { display: flex; flex-direction: column; gap: .1rem; font-family: var(--sans); font-size: .85rem; }
+.moment-comment-name { color: var(--gold-dim); font-size: .72rem; letter-spacing: .04em; }
+.moment-comment-message { color: var(--cream); }
+.moment-comments-empty { font-family: var(--sans); font-size: .82rem; color: var(--muted); font-style: italic; }
+
+.moment-comment-form { display: flex; flex-direction: column; gap: .5rem; border-top: 1px solid var(--border); padding-top: 1rem; }
+.moment-comment-form input {
+  background: var(--bg); border: 1px solid var(--border); color: var(--cream);
+  padding: .6rem .75rem; border-radius: 4px; font-family: var(--sans); font-size: .85rem;
+}
+.moment-comment-form input:focus { outline: none; border-color: var(--gold-dim); }
+.moment-comment-row { display: flex; gap: .5rem; }
+.moment-comment-row input { flex: 1; }
+.moment-comment-row button {
+  background: var(--gold); border: none; color: var(--bg);
+  width: 40px; border-radius: 4px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.moment-comment-row button:disabled { opacity: .5; cursor: default; }

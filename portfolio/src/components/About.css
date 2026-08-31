@@ -1,0 +1,35 @@
+.about { padding: 7rem 2rem; }
+.about-inner {
+  display: grid;
+  grid-template-columns: .8fr 1.6fr;
+  gap: 3.5rem;
+}
+.about-inner > * { min-width: 0; }
+.about-glyph {
+  font-family: var(--hanzi);
+  font-size: 5rem;
+  color: var(--gold);
+  line-height: 1;
+}
+.about h2 {
+  font-family: var(--sans);
+  font-size: .78rem;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  margin-bottom: 1.4rem;
+}
+.about-p1 { font-size: 1.25rem; margin-bottom: 1rem; white-space: pre-line; }
+
+.about-bilingual { margin-bottom: 1rem; }
+.about-bilingual .bilingual-ruby-line { font-size: 1.25rem; margin-bottom: .8rem; }
+.about-bilingual .bilingual-ruby-line:last-child { margin-bottom: 0; }
+.about-bilingual .bilingual-gap { height: .5rem; }
+
+.about-p2 { font-size: 1.1rem; color: var(--muted); }
+.about-skills { margin-top: 3.5rem; }
+
+@media (max-width: 859px) {
+  .about { padding: 5rem 1.4rem; }
+  .about-inner { grid-template-columns: 1fr; gap: 2rem; }
+}

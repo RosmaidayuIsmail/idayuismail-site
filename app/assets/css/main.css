@@ -1,0 +1,185 @@
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Great+Vibes&family=Dancing+Script:wght@400;600;700&family=Allura&family=Parisienne&family=Tangerine:wght@400;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Cinzel:wght@500;600;700&family=Marcellus&family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500&display=swap');
+
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+@theme {
+  --font-display: "Playfair Display", ui-serif, Georgia, serif;
+  --font-script: "Great Vibes", cursive;
+  --font-arabic: "Amiri", ui-serif, serif;
+  --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
+
+  /* Champagne gold \u2014 primary brand color */
+  --color-gold-50: #fdf8ec;
+  --color-gold-100: #faf0d6;
+  --color-gold-200: #f3ddaa;
+  --color-gold-300: #ecc973;
+  --color-gold-400: #e3b04a;
+  --color-gold-500: #d4a017;
+  --color-gold-600: #b8860b;
+  --color-gold-700: #966a08;
+  --color-gold-800: #7a560f;
+  --color-gold-900: #654812;
+  --color-gold-950: #3a2705;
+
+  /* Midnight ink \u2014 neutral / background scale */
+  --color-ink-50: #eef3f9;
+  --color-ink-100: #d7e3f0;
+  --color-ink-200: #b0c7e1;
+  --color-ink-300: #85a8cf;
+  --color-ink-400: #5a86b7;
+  --color-ink-500: #3c6796;
+  --color-ink-600: #2a4d75;
+  --color-ink-700: #1f3a5c;
+  --color-ink-800: #142a45;
+  --color-ink-900: #0b1c30;
+  --color-ink-950: #051021;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-ink-950);
+  color: var(--color-gold-50);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: var(--color-gold-400);
+  color: var(--color-ink-950);
+}
+
+.invite-backdrop {
+  background:
+    radial-gradient(circle at 15% 0%, rgba(212, 160, 23, 0.12), transparent 55%),
+    radial-gradient(circle at 85% 100%, rgba(212, 160, 23, 0.08), transparent 50%),
+    linear-gradient(180deg, var(--color-ink-950) 0%, var(--color-ink-900) 55%, var(--color-ink-800) 100%);
+}
+
+.theme-surface {
+  background:
+    radial-gradient(circle at 15% 0%, var(--theme-accent-soft, rgba(212, 160, 23, 0.12)), transparent 55%),
+    radial-gradient(circle at 85% 100%, var(--theme-accent-soft, rgba(212, 160, 23, 0.08)), transparent 50%),
+    linear-gradient(180deg, var(--theme-bg-from, #04101f) 0%, var(--theme-bg-via, #0b1c30) 55%, var(--theme-bg-to, #142a45) 100%);
+  color: var(--theme-ink, #ffffff);
+  transition: background 0.5s ease-in-out, color 0.5s ease-in-out;
+}
+
+.font-script { font-family: var(--font-script); }
+.font-display { font-family: var(--font-display); }
+.font-heading { font-family: var(--theme-heading-font, var(--font-script)); }
+.font-arabic { font-family: var(--font-arabic); direction: rtl; }
+
+/* Enhanced Animations */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-up { animation: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.delay-1 { animation-delay: 0.1s; }
+.delay-2 { animation-delay: 0.2s; }
+.delay-3 { animation-delay: 0.3s; }
+.delay-4 { animation-delay: 0.4s; }
+.delay-5 { animation-delay: 0.5s; }
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(212, 160, 23, 0.4); }
+  50% { box-shadow: 0 0 20px rgba(212, 160, 23, 0.85); }
+}
+.animate-glow { animation: glow-pulse 3s ease-in-out infinite; }
+
+/* Page transition: a quick, pure opacity crossfade only - no vertical
+   shift. This used to also translateY() the whole outgoing page over 0.4s,
+   which meant every button/link on the page (e.g. the RSVP page's
+   'Return to Invitation' button) visibly faded out AND slid as part of
+   just being clicked, since nuxt.config.ts uses mode: 'out-in' (the leave
+   transition plays out in full before the next page appears). Caught on a
+   screen recording, a button fading and drifting mid-click reads as broken/
+   corrupted rather than a deliberate effect - a fast plain fade with no
+   movement doesn't have that problem, so it survives being caught in a
+   frame while still feeling smooth for anyone navigating in real time. -->
+.page-enter-active, .page-leave-active {
+  transition: opacity 0.2s ease;
+}
+.page-enter-from { opacity: 0; }
+.page-leave-to { opacity: 0; }
+
+/* Floating petals */
+.petals-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+.petal {
+  position: absolute;
+  width: clamp(16px, 3vw, 24px);
+  height: clamp(24px, 4vw, 38px);
+  top: 100%;
+  left: calc(var(--i, 0) * 5vw);
+  animation: float-petal var(--duration, 13s) linear infinite;
+  animation-delay: calc(var(--i, 0) * -1.2s);
+  transform-origin: center bottom;
+  filter: drop-shadow(0 0 4px rgba(212, 160, 23, 0.6));
+  will-change: transform, opacity;
+}
+.petal svg { width: 100%; height: 100%; display: block; }
+
+@keyframes float-petal {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+  10% { opacity: 1; }
+  100% { transform: translateY(-115vh) rotate(360deg); opacity: 0; }
+}
+
+/* List enter/leave + reorder (used with <TransitionGroup name="list">) */
+.list-enter-active,
+.list-leave-active {
+  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.list-enter-from {
+  opacity: 0;
+  transform: translateY(12px);
+}
+.list-leave-to {
+  opacity: 0;
+  transform: translateY(-12px);
+}
+.list-leave-active {
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+.list-move {
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Subtle hover lift for cards/rows */
+.hover-lift {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 0 1px color-mix(in srgb, var(--color-gold-500, #d4a017) 30%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .petal, .animate-fade-up, .animate-glow, .page-enter-active, .page-leave-active {
+    animation: none !important;
+    transition: none !important;
+  }
+  .page-enter-from, .page-leave-to { opacity: 1; transform: none; }
+  .list-enter-active, .list-leave-active, .list-move, .hover-lift {
+    transition: none !important;
+  }
+  .list-enter-from, .list-leave-to { opacity: 1; transform: none; }
+  .hover-lift:hover { transform: none; }
+}
+
+:deep(a:visited) { color: inherit; }

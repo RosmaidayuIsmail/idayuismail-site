@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Brush+Script&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@400;500&family=Noto+Sans+KR:wght@400;500&family=Work+Sans:wght@400;500;600&display=swap');
+
+:root {
+  --bg: #100f17;
+  --bg-panel: #181621;
+  --gold: #e8c988;
+  --gold-dim: #a9915f;
+  --cream: #f2ede0;
+  --muted: #8b8578;
+  --seal: #b23b30;
+  --border: #3c3830;
+  --serif: 'Cormorant Garamond', serif;
+  --brush: 'Nanum Brush Script', cursive;
+  --hanzi: 'Ma Shan Zheng', cursive;
+  --sans: 'Work Sans', 'Noto Sans KR', 'Noto Sans SC', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; overflow-x: hidden; }
+body {
+  background: var(--bg);
+  color: var(--cream);
+  font-family: var(--serif);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; }
+
+.fade-up {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity .7s ease, transform .7s ease;
+}
+.fade-up.in { opacity: 1; transform: translateY(0); }
+
+.card-hover { transition: border-color .3s ease, transform .3s ease; }
+.card-hover:hover { border-color: var(--gold-dim); transform: translateY(-4px); }
+
+.cta-btn { transition: background .25s ease, transform .25s ease; }
+.cta-btn:hover { background: var(--cream); transform: translateY(-2px); }
+
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2.6rem;
+}
+.section-head h2 {
+  font-family: var(--brush);
+  font-size: 2.6rem;
+  color: var(--gold);
+  font-weight: 400;
+}
+.section-head span {
+  font-family: var(--sans);
+  font-size: .76rem;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.wrap { max-width: 1200px; margin: 0 auto; }
+
+.ruby-block { display: block; }
+.ruby-word {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  vertical-align: top;
+  margin: 0 .18em .3em 0;
+}
+.ruby-original { white-space: nowrap; }
+.ruby-roman {
+  display: block;
+  font-family: var(--sans);
+  font-weight: 400;
+  font-style: normal;
+  font-size: .55em;
+  letter-spacing: .01em;
+  color: var(--gold-dim);
+  opacity: .9;
+  white-space: nowrap;
+  margin-top: .15em;
+}
+
+@media (min-width: 1600px) {
+  .wrap { max-width: 1360px; }
+}
+@media (max-width: 480px) {
+  .section-head h2 { font-size: 2.1rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .fade-up { opacity: 1 !important; transform: none !important; transition: none !important; }
+}

@@ -1,0 +1,230 @@
+rules_version = '2';
+
+// Paste this into Firebase Console > Firestore Database > Rules, or deploy
+// with the Firebase CLI (`firebase deploy --only firestore:rules`).
+//
+// Data model:
+//   users/{uid}                        - profile + role ('couple' | 'superadmin' | 'vip').
+//                                         A 'vip' account additionally carries
+//                                         vipApprovalStatus ('pending' | 'approved' |
+//                                         'rejected') - VIP Cinematic is a wholly
+//                                         separate, admin-approved tier with its own
+//                                         sign-up/login/dashboard at /vip, not a
+//                                         feature a regular 'couple' account can turn
+//                                         on. Only a superadmin's write can ever set
+//                                         vipApprovalStatus to 'approved' - see below.
+//   slugs/{slug}                       - { weddingId } reservation, public read
+//   weddings/{weddingId}               - one per couple (or one per VIP account),
+//                                         owned by ownerUid
+//   weddings/{weddingId}/guests/{id}   - full RSVP data (dietary, phone, etc.)
+//                                         PRIVATE: only the owner or a superadmin can read
+//   weddings/{weddingId}/wishes/{id}   - public-safe subset (name + message only)
+//                                         used by the live Wishes Wall
+//   weddings/{weddingId}/billingRequests/{id} - a couple's own "please upgrade
+//                                         me to Premium" requests. PRIVATE:
+//                                         only the owner (create/read their
+//                                         own) or a superadmin (read/update
+//                                         to approve/decline) can touch these.
+//   weddings/{weddingId}/payments/{id} - ToyyibPay payment records for
+//                                         premium upgrades. Fully server-
+//                                         managed (Firebase Admin SDK only);
+//                                         owner/superadmin read-only, shown
+//                                         as payment history on the Billing
+//                                         page.
+//   weddings/{weddingId}/physicalOrders/{id} - a couple's own physical card
+//                                         orders (see usePhysicalOrders.ts).
+//                                         Same shape as billingRequests:
+//                                         PRIVATE, owner can create/read
+//                                         their own as 'pending', only a
+//                                         superadmin can update the status
+//                                         as it moves through fulfillment.
+//                                         AdminPhysicalOrders.vue reads
+//                                         across every wedding at once via a
+//                                         collectionGroup('physicalOrders')
+//                                         query, which this same rule covers.
+//   driveConnections/{weddingId}       - a couple's own Google Drive OAuth
+//                                         connection (refresh/access tokens,
+//                                         which app folder we upload their
+//                                         CSV/PDF exports into). Contains
+//                                         sensitive tokens, so it is NEVER
+//                                         readable/writable via the client
+//                                         SDK - only the Firebase Admin SDK,
+//                                         from the /api/drive/* server
+//                                         routes, ever touches this
+//                                         collection. See server/utils/
+//                                         google-drive.ts.
+//   driveOAuthStates/{state}           - short-lived (~15 min), single-use
+//                                         tokens used to carry a weddingId
+//                                         through the Google OAuth redirect
+//                                         (which arrives as an unauthenticated
+//                                         browser GET, so there's no Firebase
+//                                         ID token available to identify the
+//                                         wedding otherwise). Admin SDK only.
+//
+// The guests/wishes split exists specifically so the full guest list (phone
+// numbers, dietary needs, guest counts) never has to be publicly readable -
+// unlike a flatter model, nobody can query someone else's guest list just by
+// opening dev tools.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isSuperAdmin() {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'superadmin';
+    }
+
+    function isOwner(weddingData) {
+      return isSignedIn() && request.auth.uid == weddingData.ownerUid;
+    }
+
+    match /users/{uid} {
+      allow read: if isSignedIn() && (request.auth.uid == uid || isSuperAdmin());
+      // Public self-signup is closed (WeddingCard is now invitation-only -
+      // only the superadmin creates accounts/weddings). This still allows a
+      // brand-new Firebase Auth user to create their OWN first-time profile
+      // doc (so an existing/legacy 'couple' or 'vip' login keeps working
+      // exactly as before), but it can never be created with role
+      // 'superadmin', and a 'vip' profile can never be created already
+      // 'approved' - closing the privilege-escalation hole even for someone
+      // who bypasses the UI and calls the Firebase Auth SDK directly.
+      allow create: if isSignedIn() && request.auth.uid == uid &&
+        request.resource.data.role in ['couple', 'vip'] &&
+        (!('vipApprovalStatus' in request.resource.data) || request.resource.data.vipApprovalStatus != 'approved');
+      // A superadmin can update any profile (needed to approve/decline a
+      // VIP request - see AdminVipApprovals.vue). Otherwise, a user can
+      // only update their own profile, can't grant themselves the
+      // superadmin role, and can never write 'approved' as their own
+      // vipApprovalStatus - they can request ('pending') but only a
+      // superadmin's write can actually grant VIP access.
+      allow update: if isSuperAdmin() || (
+        isSignedIn() && request.auth.uid == uid &&
+        request.resource.data.role == resource.data.role &&
+        request.resource.data.vipApprovalStatus != 'approved'
+      );
+    }
+
+    match /slugs/{slug} {
+      allow read: if true; // needed to resolve /w/{slug} public pages
+      allow create: if isSignedIn();
+      allow update, delete: if false;
+    }
+
+    // Shared, non-personal catalog used by the dashboard pickers. It must be
+    // readable so a saved custom theme/font/preset can render correctly.
+    // Only a superadmin may change it.
+    match /platformCatalog/{catalogId} {
+      allow read: if true;
+      allow create, update, delete: if isSuperAdmin();
+    }
+
+    match /weddings/{weddingId} {
+      allow read: if resource.data.status == 'published' || isOwner(resource.data) || isSuperAdmin();
+      // WeddingCard is invitation-only now: every new wedding is created by
+      // the superadmin (Admin > Weddings & Sync > "+ New Wedding"), never by
+      // a couple signing up and creating their own. Existing weddings a
+      // couple already owns are untouched - this only closes the door on
+      // creating brand-new ones outside the admin panel.
+      allow create: if isSuperAdmin();
+      // Owners can update their own wedding freely EXCEPT the billing fields:
+      // plan/paymentStatus may only change via a superadmin (admin panel) or
+      // the Firebase Admin SDK on the server (ToyyibPay payment settlement).
+      // Without this guard a couple could set plan:'premium' from dev tools.
+      allow update: if isSuperAdmin() || (
+        isOwner(resource.data) &&
+        request.resource.data.plan == resource.data.plan &&
+        request.resource.data.paymentStatus == resource.data.paymentStatus
+      );
+      allow delete: if isOwner(resource.data) || isSuperAdmin();
+
+      match /guests/{guestId} {
+        allow create: if true; // public RSVP submission
+        allow read: if isOwner(get(/databases/$(database)/documents/weddings/$(weddingId)).data) || isSuperAdmin();
+        // The owner (or superadmin) can change anything. A guest can also
+        // update THEIR OWN doc with no auth at all, through the
+        // personalized link the couple shared with them (useGuests.ts's
+        // personalizedLink() embeds the guest's own id as ?gid=, and
+        // rsvp.vue's submitForm() writes straight to that doc id when
+        // present) - this is what lets an already-invited guest's RSVP
+        // update their existing record instead of creating a duplicate
+        // guest. Restricted to hasOnly(...) so a shared link can only ever
+        // record that guest's own name/RSVP answer, never grant them a
+        // VIP tier, a phone number, or a table assignment.
+        allow update: if isOwner(get(/databases/$(database)/documents/weddings/$(weddingId)).data) || (
+          request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['name', 'attending', 'guestCount', 'specialSeating', 'dietary', 'doa', 'submittedAt'])
+        );
+        allow delete: if isOwner(get(/databases/$(database)/documents/weddings/$(weddingId)).data);
+      }
+
+      match /wishes/{wishId} {
+        allow read: if true; // powers the public live Wishes Wall
+        allow create: if true;
+        allow update: if false;
+        // The couple can delete a wish - specifically so removing a guest
+        // in the dashboard (useGuests.ts's removeGuest()) can also remove
+        // that guest's wish from the public Wishes Wall. Guests submitted
+        // after the rsvp.vue fix that gives a guest and their wish the
+        // same document id are matched exactly; older wishes (created
+        // before that fix, with an unrelated random id) aren't reachable
+        // this way and need a one-off manual cleanup.
+        allow delete: if isOwner(get(/databases/$(database)/documents/weddings/$(weddingId)).data) || isSuperAdmin();
+      }
+
+      match /billingRequests/{requestId} {
+        allow read: if isOwner(get(/databases/$(database)/documents/weddings/$(weddingId)).data) || isSuperAdmin();
+        // A couple can only ever file a new request as 'pending' for their
+        // own wedding - only a superadmin can flip it to approved/declined.
+        allow create: if isOwner(get(/databases/$(database)/documents/weddings/$(weddingId)).data) &&
+          request.resource.data.status == 'pending';
+        allow update: if isSuperAdmin();
+        allow delete: if false;
+      }
+
+      match /payments/{paymentId} {
+        // ToyyibPay payment records. Fully server-managed: created/updated
+        // only by the payments API routes through the Firebase Admin SDK
+        // (which bypasses rules). Clients may only read their own, which
+        // powers the payment history on the Billing page.
+        allow read: if isOwner(get(/databases/$(database)/documents/weddings/$(weddingId)).data) || isSuperAdmin();
+        allow create, update, delete: if false;
+      }
+
+      match /physicalOrders/{orderId} {
+        allow read: if isOwner(get(/databases/$(database)/documents/weddings/$(weddingId)).data) || isSuperAdmin();
+        // Same shape as billingRequests: a couple can only ever file a new
+        // order as 'pending' for their own wedding - only a superadmin can
+        // move it through confirmed/in_production/shipped/delivered (or
+        // cancel it).
+        allow create: if isOwner(get(/databases/$(database)/documents/weddings/$(weddingId)).data) &&
+          request.resource.data.status == 'pending';
+        allow update: if isSuperAdmin();
+        allow delete: if false;
+      }
+    }
+
+    // Google Drive OAuth tokens and short-lived OAuth state - Admin SDK only,
+    // never exposed to any client. See the data model note above.
+    match /driveConnections/{weddingId} {
+      allow read, write: if false;
+    }
+    match /driveOAuthStates/{state} {
+      allow read, write: if false;
+    }
+
+    // Per-wedding secret token gating the public "guest intake" page
+    // (app/pages/w/[slug]/guest-intake.vue) - lets a couple add their own
+    // VIP/General guests without a login, using a link only they were
+    // given. Admin SDK only, same as driveConnections above: this must
+    // NEVER be readable via the client SDK, because weddings/{weddingId}
+    // itself IS publicly readable once a wedding is published (see the
+    // read rule above) - a token stored on the wedding doc would leak to
+    // every visitor of the invitation page. See server/utils/guest-intake.ts.
+    match /guestIntakeTokens/{weddingId} {
+      allow read, write: if false;
+    }
+  }
+}

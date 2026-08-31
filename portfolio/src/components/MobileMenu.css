@@ -1,0 +1,28 @@
+.mobile-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(16, 15, 23, .98);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+}
+.mobile-menu-close {
+  position: absolute;
+  top: 1.5rem; right: 1.5rem;
+  background: none; border: none; color: var(--cream); cursor: pointer;
+}
+.mobile-menu-link {
+  font-family: var(--brush);
+  font-size: 2.4rem;
+  color: var(--cream);
+  text-align: center;
+}
+.mobile-menu-link .ruby-roman { font-family: var(--sans); font-size: .4em; }
+.mobile-menu-link.active { color: var(--gold); }
+
+@media (min-width: 860px) {
+  .mobile-menu { display: none; }
+}
