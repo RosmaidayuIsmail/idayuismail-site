@@ -111,10 +111,10 @@
                 <h2 class="font-display font-semibold text-xl mb-1" :style="{ color: 'var(--theme-accent)' }">{{ content.locationHeading || 'Location' }}</h2>
                 <p class="text-[0.65rem] text-[color-mix(in_srgb,var(--card-text)_60%,transparent)] mb-4">{{ content.locationSubtitle || 'Scan or tap to open in Maps' }}</p>
                 <div class="flex flex-col items-center gap-4">
-                  <div class="p-2 bg-white rounded-xl shadow-lg">
+                  <div class="qr-card p-2 rounded-xl shadow-lg">
                     <img :src="qrCodeUrl" alt="QR code" class="w-24 h-24">
                   </div>
-                  <UButton size="xs" color="primary" class="font-semibold rounded-full px-4 pointer-events-none">
+                  <UButton size="xs" color="neutral" class="accent-btn font-semibold rounded-full px-4 pointer-events-none">
                     {{ content.locationMapsButtonLabel || 'Google Maps' }}
                   </UButton>
                 </div>
@@ -240,6 +240,19 @@ function prev() {
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
   box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.3) !important;
   color: var(--card-text, #ffffff) !important;
+}
+
+/* Nuxt UI's "primary"/"neutral" colors are fixed, not per-wedding theme
+   colors, so the Maps button needs its own copy of the theme-following
+   button style (same fix as DetailsSlideContent.vue / StoryInvite.vue). */
+.accent-btn {
+  background-color: var(--theme-accent, #d4a017) !important;
+  color: var(--theme-on-accent, #1f1400) !important;
+}
+/* Light accent tint keeps the QR scannable while matching the theme. */
+.qr-card {
+  background: color-mix(in srgb, var(--theme-accent, #d4a017) 10%, #fff);
+  border: 1px solid color-mix(in srgb, var(--theme-accent, #d4a017) 25%, transparent);
 }
 
 .slide-next-enter-active,

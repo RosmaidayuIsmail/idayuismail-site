@@ -94,7 +94,7 @@
     <h2 class="font-display font-semibold text-2xl mb-2" :style="{ color: 'var(--theme-accent)' }">{{ content.locationHeading || 'Location' }}</h2>
     <p class="text-sm text-[color-mix(in_srgb,var(--card-text)_60%,transparent)] mb-6">{{ content.locationSubtitle || 'Scan or tap to open in Maps' }}</p>
     <div class="flex flex-col items-center gap-6">
-      <div class="p-3 bg-white rounded-2xl shadow-xl">
+      <div class="qr-card p-3 rounded-2xl shadow-xl">
         <img :src="qrCodeUrl" :alt="`QR code linking to the venue on ${content.locationMapsButtonLabel || 'Google Maps'}`" class="w-36 h-36" loading="lazy">
       </div>
       <UButton :to="content.mapUrl" target="_blank" external icon="i-heroicons-map-pin" color="neutral" class="accent-btn font-semibold rounded-full px-6 shadow-md">
@@ -134,3 +134,20 @@ defineProps<{
   monogramFontFamily: string
 }>()
 </script>
+
+<style scoped>
+/* details.vue's scoped .accent-btn cannot reach into this child component, so
+   the Maps button needs its own copy of the theme-following button style. */
+.accent-btn {
+  background-color: var(--theme-accent, #d4a017) !important;
+  color: var(--theme-on-accent, #1f1400) !important;
+}
+.accent-btn:hover {
+  filter: brightness(1.08);
+}
+/* Light accent tint keeps the QR scannable while matching the theme. */
+.qr-card {
+  background: color-mix(in srgb, var(--theme-accent, #d4a017) 10%, #fff);
+  border: 1px solid color-mix(in srgb, var(--theme-accent, #d4a017) 25%, transparent);
+}
+</style>

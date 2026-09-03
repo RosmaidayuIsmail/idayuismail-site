@@ -1,5 +1,11 @@
 <template>
-  <div class="theme-surface text-white relative overflow-hidden" :style="styleVars">
+  <!-- Desktop pass: see index.vue's identical wrapper - below lg this outer
+       div is a no-op (its only child is w-full), at lg+ it centers a
+       capped-width card on the theme's gradient backdrop instead of
+       stretching the cover photo and hero text across the whole browser
+       width. -->
+  <div class="theme-surface flex justify-center" :style="styleVars">
+    <div class="text-white relative overflow-hidden w-full max-w-[480px] lg:my-10 lg:rounded-[2rem] lg:shadow-[0_30px_90px_-20px_rgba(0,0,0,0.7)]">
     <CustomCodeBlock v-if="customCode.position === 'top'" class="relative z-20" />
 
     <!-- Same full-bleed cover-photo background layer as the classic layout,
@@ -218,10 +224,10 @@
         <h2 class="font-display font-semibold text-2xl mb-2" :style="{ color: 'var(--theme-accent)' }">{{ wedding.content.locationHeading || 'Location' }}</h2>
         <p class="text-sm text-white/60 mb-6">{{ wedding.content.locationSubtitle || 'Scan or tap to open in Maps' }}</p>
         <div class="flex flex-col items-center gap-6">
-          <div class="p-3 bg-white rounded-2xl shadow-xl">
+          <div class="qr-card p-3 rounded-2xl shadow-xl">
             <img :src="qrCodeUrl" :alt="`QR code linking to the venue on ${wedding.content.locationMapsButtonLabel || 'Google Maps'}`" class="w-36 h-36" loading="lazy">
           </div>
-          <UButton :to="wedding.content.mapUrl" target="_blank" external icon="i-heroicons-map-pin" color="primary" class="font-semibold rounded-full px-6 shadow-md">
+          <UButton :to="wedding.content.mapUrl" target="_blank" external icon="i-heroicons-map-pin" color="neutral" class="accent-btn font-semibold rounded-full px-6 shadow-md">
             {{ wedding.content.locationMapsButtonLabel || 'Google Maps' }}
           </UButton>
         </div>
@@ -260,6 +266,7 @@
       </ScrollReveal>
 
       <CustomCodeBlock v-if="customCode.position !== 'top'" class="w-full" />
+    </div>
     </div>
   </div>
 </template>
@@ -327,3 +334,21 @@ const monogramFontFamily = computed(() => {
   return `'${content.monogramFont || 'Cormorant Garamond'}', serif`
 })
 </script>
+
+<style scoped>
+/* Nuxt UI's "primary"/"neutral" colors are fixed, not per-wedding theme
+   colors, so the Maps button needs its own copy of the theme-following
+   button style (same fix as DetailsSlideContent.vue). */
+.accent-btn {
+  background-color: var(--theme-accent, #d4a017) !important;
+  color: var(--theme-on-accent, #1f1400) !important;
+}
+.accent-btn:hover {
+  filter: brightness(1.08);
+}
+/* Light accent tint keeps the QR scannable while matching the theme. */
+.qr-card {
+  background: color-mix(in srgb, var(--theme-accent, #d4a017) 10%, #fff);
+  border: 1px solid color-mix(in srgb, var(--theme-accent, #d4a017) 25%, transparent);
+}
+</style>
