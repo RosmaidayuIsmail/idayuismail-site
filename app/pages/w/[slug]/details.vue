@@ -32,11 +32,7 @@
       <MusicToggle :src="wedding.content.audioSrc" autoplay />
     </div>
 
-    <!-- max-w-lg caps the classic slideshow the same on every screen size
-         (already correct on desktop). The Book/Menu layout gets more room
-         at lg+ instead - see DetailsBookFlip.vue's matching lg: card size -
-         since a book spread reads better wider than a single slide card. -->
-    <div class="w-full relative z-10 animate-fade-up" :class="layoutMode === 'menu' ? 'max-w-lg lg:max-w-2xl' : 'max-w-lg'">
+    <div class="max-w-lg w-full relative z-10 animate-fade-up">
       <div class="flex items-center justify-between mb-6 px-2">
         <!-- Page-level chrome, not inside the card - so it reads off
              --theme-ink (dark on light themes like Matcha Strawberry, white

@@ -134,13 +134,9 @@ onMounted(async () => {
     height: 560,
     size: 'stretch',
     minWidth: 280,
-    // Bumped from 480/640 so 'stretch' mode has room to fill the wider
-    // .book-stage the lg: media query below now gives it on desktop -
-    // these are just outer bounds, .book-stage's own width is still what
-    // actually determines the rendered size on any given screen.
-    maxWidth: 640,
+    maxWidth: 480,
     minHeight: 420,
-    maxHeight: 960,
+    maxHeight: 640,
     showCover: true,
     usePortrait: true,
     mobileScrollSupport: true,
@@ -193,20 +189,6 @@ onKeyStroke('ArrowLeft', () => flipPrev())
   width: 100%;
   height: 560px;
   transition: opacity 0.2s ease;
-}
-
-/* Desktop pass: the book was capped at the same ~420px on every screen
-   size, including a laptop's much bigger viewport, leaving it looking
-   small and adrift on its own backdrop. Widen it (same aspect ratio) once
-   there's room, matching details.vue's lg:max-w-2xl wrapper. */
-@media (min-width: 1024px) {
-  .book-stage {
-    max-width: 580px;
-    min-height: 850px;
-  }
-  .book-container {
-    height: 850px;
-  }
 }
 
 .book-container-loading {
