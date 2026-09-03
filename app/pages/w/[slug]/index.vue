@@ -12,14 +12,7 @@
     </div>
   </div>
 
-  <!-- Desktop pass: below lg (~1024px) this outer wrapper is a no-op (its
-       only child is w-full, so it's invisibly the same full-bleed layout as
-       before). At lg+ it centers a capped-width "card" - the same
-       max-w-lg-on-a-gradient-backdrop pattern details.vue/rsvp.vue already
-       use - instead of stretching the cover photo and hero text across the
-       whole browser width. -->
-  <div v-else-if="wedding.content.layoutStyle !== 'story'" class="theme-surface flex justify-center" :style="styleVars">
-    <div class="text-white relative overflow-hidden w-full max-w-[480px] lg:my-10 lg:rounded-[2rem] lg:shadow-[0_30px_90px_-20px_rgba(0,0,0,0.7)]">
+  <div v-else-if="wedding.content.layoutStyle !== 'story'" class="theme-surface text-white relative overflow-hidden" :style="styleVars">
     <CustomCodeBlock v-if="customCode.position === 'top'" class="relative z-20" />
 
     <div v-if="wedding.content.coverPhotoUrl" class="absolute inset-0 z-0 transition-opacity duration-700" :class="opened && coverPhotoLoaded ? 'opacity-100' : 'opacity-0'">
@@ -160,7 +153,6 @@
       </div>
 
       <CustomCodeBlock v-if="customCode.position !== 'top'" class="mt-10 w-full max-w-lg mx-auto" />
-    </div>
     </div>
   </div>
 

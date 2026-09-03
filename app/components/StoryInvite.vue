@@ -1,11 +1,5 @@
 <template>
-  <!-- Desktop pass: see index.vue's identical wrapper - below lg this outer
-       div is a no-op (its only child is w-full), at lg+ it centers a
-       capped-width card on the theme's gradient backdrop instead of
-       stretching the cover photo and hero text across the whole browser
-       width. -->
-  <div class="theme-surface flex justify-center" :style="styleVars">
-    <div class="text-white relative overflow-hidden w-full max-w-[480px] lg:my-10 lg:rounded-[2rem] lg:shadow-[0_30px_90px_-20px_rgba(0,0,0,0.7)]">
+  <div class="theme-surface text-white relative overflow-hidden" :style="styleVars">
     <CustomCodeBlock v-if="customCode.position === 'top'" class="relative z-20" />
 
     <!-- Same full-bleed cover-photo background layer as the classic layout,
@@ -266,7 +260,6 @@
       </ScrollReveal>
 
       <CustomCodeBlock v-if="customCode.position !== 'top'" class="w-full" />
-    </div>
     </div>
   </div>
 </template>
