@@ -47,7 +47,17 @@ export default defineNuxtConfig({
         { property: 'og:type', content: 'website' }
       ],
       link: [
-        { rel: 'icon', type: 'image/svg+xml', href: '/idayuismail-logo.svg' }
+        // Both declared: some browsers (older Safari in particular) don't
+        // honor an SVG favicon and silently fall back to /favicon.ico -
+        // that file itself is now also a real render of the same logo
+        // (public/favicon.ico), not the old default Nuxt/ring icon.
+        // ?v=2 query strings: browsers cache favicons far more stubbornly
+        // than ordinary assets, sometimes keeping the old one even after
+        // the file at the same URL changes - bump this suffix any time the
+        // favicon image itself changes again, to force every browser to
+        // treat it as a new resource instead of reusing its old icon.
+        { rel: 'icon', type: 'image/svg+xml', href: '/idayuismail-logo.svg?v=2' },
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico?v=2' }
       ]
     },
     pageTransition: { name: 'page', mode: 'out-in' }
