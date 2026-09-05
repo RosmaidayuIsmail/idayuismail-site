@@ -1,18 +1,26 @@
 <template>
-  <div class="min-h-screen text-ink-900 dark:text-gold-50 selection:bg-gold-400 selection:text-ink-950">
+  <div class="relative min-h-screen text-ink-900 dark:text-gold-50 selection:bg-gold-400 selection:text-ink-950 overflow-x-hidden">
+    <!-- Ambient background glow so a wide desktop viewport doesn't just read
+         as a centered column of content on a flat, empty color either side -
+         same soft-blob technique as the dashboard/admin layouts, subtle
+         enough to work under both the light and dark palette. -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+      <div class="absolute -top-24 -left-24 w-[32rem] h-[32rem] bg-gold-400/10 dark:bg-gold-500/10 blur-[120px] rounded-full" />
+      <div class="absolute top-1/3 -right-32 w-[28rem] h-[28rem] bg-indigo-400/10 dark:bg-indigo-500/10 blur-[120px] rounded-full" />
+      <div class="absolute bottom-0 left-1/4 w-[24rem] h-[24rem] bg-emerald-400/10 dark:bg-emerald-500/10 blur-[120px] rounded-full" />
+    </div>
+
     <!-- Header -->
-    <header class="max-w-6xl mx-auto px-6 pt-8 flex items-center justify-between">
+    <header class="relative z-10 max-w-7xl mx-auto px-6 pt-8 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-gold-300 to-gold-600 text-white flex items-center justify-center font-display font-bold text-lg shadow-md shadow-gold-500/20">
-          I
-        </div>
+        <SiteLogoLink class="w-10 h-10" />
         <span class="font-display font-semibold text-lg tracking-wide text-ink-950 dark:text-gold-100">Idayu Ismail</span>
       </div>
       <ThemeToggle />
     </header>
 
     <!-- Hero -->
-    <section class="max-w-3xl mx-auto px-6 pt-20 sm:pt-28 pb-16 sm:pb-20 text-center">
+    <section class="relative z-10 max-w-4xl mx-auto px-6 pt-20 sm:pt-28 pb-16 sm:pb-20 text-center">
       <p class="animate-fade-up inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-gold-500/30 bg-gold-400/10 text-gold-700 dark:text-gold-200 text-xs font-medium tracking-wider uppercase mb-8">
         <UIcon name="i-heroicons-sparkles" class="w-3.5 h-3.5" />
         Welcome to my corner of the internet
@@ -29,7 +37,7 @@
     </section>
 
     <!-- Doors -->
-    <section class="max-w-6xl mx-auto px-6 pb-24 sm:pb-28">
+    <section class="relative z-10 max-w-7xl mx-auto px-6 pb-24 sm:pb-28">
       <ScrollReveal>
         <h2 class="font-display text-2xl sm:text-3xl font-bold text-center text-ink-950 dark:text-white mb-3">Where would you like to go?</h2>
         <p class="text-center text-ink-900/55 dark:text-white/50 mb-10">Each one is a little world of its own.</p>
@@ -64,8 +72,8 @@
     </section>
 
     <!-- Hobbies -->
-    <section class="border-y border-ink-900/5 dark:border-white/5 bg-white/60 dark:bg-white/[0.02] py-20 sm:py-24">
-      <div class="max-w-6xl mx-auto px-6">
+    <section class="relative z-10 border-y border-ink-900/5 dark:border-white/5 bg-white/60 dark:bg-white/[0.02] py-20 sm:py-24">
+      <div class="max-w-7xl mx-auto px-6">
         <ScrollReveal :delay="80">
           <div class="text-center mb-12">
             <h2 class="font-display text-3xl sm:text-4xl font-bold text-ink-950 dark:text-white">Life beyond work</h2>
@@ -104,7 +112,7 @@
     </section>
 
     <!-- Footer -->
-    <footer class="max-w-6xl mx-auto px-6 py-10 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-ink-900/50 dark:text-white/40">
+    <footer class="relative z-10 max-w-7xl mx-auto px-6 py-10 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-ink-900/50 dark:text-white/40">
       <div class="flex items-center gap-2">
         <UIcon name="i-heroicons-heart" class="w-4 h-4 text-gold-500" />
         <span class="font-display">Idayu Ismail</span>
@@ -118,16 +126,5 @@
 useSeoMeta({
   title: 'Idayu Ismail — Designer & Creator',
   description: 'The personal home of Idayu Ismail: WeddingCard invitation platform, portfolio, and the Home Studio house designer.'
-})
-
-useHead({
-  link: [
-    {
-      key: 'favicon',
-      rel: 'icon',
-      type: 'image/svg+xml',
-      href: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🌸</text></svg>'
-    }
-  ]
 })
 </script>

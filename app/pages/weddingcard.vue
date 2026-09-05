@@ -5,11 +5,15 @@
     <!-- Sticky Glass Navbar -->
     <header class="fixed top-0 inset-x-0 z-50 transition-all duration-300" :class="{ 'bg-ink-950/70 backdrop-blur-md border-b border-white/10 shadow-lg py-3': scrolled, 'py-5': !scrolled }">
       <div class="max-w-7xl mx-auto px-6 flex items-center justify-between">
-        <div class="flex items-center gap-2 group cursor-pointer" @click="scrollToTop">
-          <div class="p-2 rounded-lg bg-white/5 border border-white/10 group-hover:border-gold-400/50 transition-colors">
-            <UIcon name="i-heroicons-heart" class="w-5 h-5 text-gold-300 group-hover:scale-110 transition-transform" />
+        <div class="flex items-center gap-4">
+          <SiteLogoLink label="Back to Idayu Ismail" class="w-9 h-9" />
+          <div class="w-px h-6 bg-white/10" />
+          <div class="flex items-center gap-2 group cursor-pointer" @click="scrollToTop">
+            <div class="p-2 rounded-lg bg-white/5 border border-white/10 group-hover:border-gold-400/50 transition-colors">
+              <UIcon name="i-heroicons-heart" class="w-5 h-5 text-gold-300 group-hover:scale-110 transition-transform" />
+            </div>
+            <span class="font-display font-bold text-xl tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-gold-100 to-gold-400">WeddingCard</span>
           </div>
-          <span class="font-display font-bold text-xl tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-gold-100 to-gold-400">WeddingCard</span>
         </div>
         <div class="flex items-center gap-3">
           <UButton to="/login" color="primary" class="font-semibold shadow-lg shadow-gold-500/20 hover:shadow-gold-500/40 transition-shadow rounded-full px-6 py-2">
@@ -20,7 +24,7 @@
     </header>
 
     <!-- Hero Section -->
-    <section class="relative z-10 pt-40 pb-20 px-6 max-w-5xl mx-auto text-center flex flex-col items-center">
+    <section class="relative z-10 pt-40 pb-20 px-6 max-w-6xl mx-auto text-center flex flex-col items-center">
       <div class="animate-fade-up inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-gold-400/30 bg-gold-400/10 text-gold-200 text-xs font-medium tracking-wider uppercase mb-8 backdrop-blur-sm">
         <span class="relative flex h-2 w-2">
           <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-gold-400 opacity-75"></span>

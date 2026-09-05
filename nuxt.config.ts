@@ -46,9 +46,8 @@ export default defineNuxtConfig({
         { name: 'theme-color', content: '#04101f' },
         { property: 'og:type', content: 'website' }
       ],
-      // Replaces the Nuxt logo with a Wedding Ring Favicon
       link: [
-        { rel: 'icon', type: 'image/svg+xml', href: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">💍</text></svg>' }
+        { rel: 'icon', type: 'image/svg+xml', href: '/idayuismail-logo.svg' }
       ]
     },
     pageTransition: { name: 'page', mode: 'out-in' }

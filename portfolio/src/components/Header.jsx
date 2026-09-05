@@ -21,10 +21,15 @@ export default function Header({ ui, active, onMenuOpen, profileName }) {
 
   return (
     <header className="site-header">
-      <Link to="/" className="logo" onClick={handleLogoClick}>
-        <span className="logo-mark">印</span>
-        <span className="logo-text">{profileName || 'Rosmaidayu Ismail'}</span>
-      </Link>
+      <div className="header-left">
+        <a href="/" className="home-link" aria-label="Back to Idayu Ismail" title="Back to Idayu Ismail">
+          <img src={`${import.meta.env.BASE_URL}idayuismail-logo.svg`} alt="" />
+        </a>
+        <Link to="/" className="logo" onClick={handleLogoClick}>
+          <span className="logo-mark">印</span>
+          <span className="logo-text">{profileName || 'Rosmaidayu Ismail'}</span>
+        </Link>
+      </div>
 
       <nav className="site-nav">
         <div className="nav-links">

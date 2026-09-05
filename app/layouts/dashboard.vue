@@ -16,6 +16,10 @@
          instead, so it can't happen regardless of load timing - see
          app/pages/admin.vue for the full writeup. -->
     <aside class="relative z-20 md:w-72 md:fixed md:inset-y-0 md:left-0 md:h-screen md:overflow-y-auto border-b md:border-b-0 md:border-r border-white/5 bg-ink-900/40 backdrop-blur-xl p-5 flex flex-col">
+      <div class="flex items-center gap-3 px-3 pt-4 mb-2">
+        <SiteLogoLink label="Back to Idayu Ismail" class="w-8 h-8" />
+        <span class="text-xs text-white/35">Idayu Ismail</span>
+      </div>
       <NuxtLink to="/weddingcard" class="flex items-center gap-3 px-3 py-4 mb-6 group">
         <div class="p-2 rounded-lg bg-white/5 border border-white/10 group-hover:border-gold-400/50 transition-colors">
           <UIcon name="i-heroicons-heart" class="w-5 h-5 text-gold-300 group-hover:scale-110 transition-transform" />
