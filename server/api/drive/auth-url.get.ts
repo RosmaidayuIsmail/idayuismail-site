@@ -15,6 +15,14 @@ export default defineEventHandler(async (event) => {
   if (!weddingId) {
     throw createError({ statusCode: 400, statusMessage: 'Missing weddingId.' })
   }
+  // Where to bounce the browser back to once the callback finishes - the
+  // couple's own /dashboard/guests, or an admin managing this wedding from
+  // /admin/wedding/{id}/guests on their behalf (see callback.get.ts, which
+  // used to always send admin connections through /dashboard/guests too -
+  // the auth middleware there then kicked a superadmin straight back out to
+  // the generic /admin, losing which wedding they were on). Only a
+  // same-origin relative path is ever trusted - see callback.get.ts.
+  const returnTo = String(getQuery(event).returnTo || '')
 
   const db = getAdminDb()
   const weddingSnap = await db.doc(`weddings/${weddingId}`).get()
@@ -27,6 +35,7 @@ export default defineEventHandler(async (event) => {
   await db.doc(`driveOAuthStates/${state}`).set({
     weddingId,
     ownerUid: uid,
+    returnTo,
     createdAt: Date.now()
   })
 

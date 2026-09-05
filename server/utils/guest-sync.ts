@@ -107,7 +107,7 @@ export async function syncGuestListToDrive(
       // write) would otherwise re-search-or-create a folder by name on
       // every single sync and never remember it - save it now so this only
       // ever happens once.
-      const ensured = await ensureAppFolder(accessToken, `WeddingCard Exports - ${slug}`)
+      const ensured = await ensureAppFolder(accessToken, clientRsvpFolderName(coupleTitle))
       folderId = ensured.folderId
       folderLink = ensured.folderLink
       await driveConnectionRef(weddingId).update({ folderId, folderLink, updatedAt: new Date().toISOString() })

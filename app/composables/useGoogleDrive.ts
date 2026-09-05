@@ -47,7 +47,12 @@ export function useGoogleDrive(weddingIdSource: () => string | undefined) {
     if (!weddingId) return
     connecting.value = true
     try {
-      const result = await serverFetch<{ url: string }>('/api/drive/auth-url', { query: { weddingId } })
+      // returnTo: send the browser back to whichever page this was clicked
+      // from (the couple's own /dashboard/guests, or an admin managing this
+      // wedding from /admin/wedding/{id}/guests) once the OAuth round trip
+      // finishes - see server/api/drive/callback.get.ts.
+      const returnTo = import.meta.client ? window.location.pathname : undefined
+      const result = await serverFetch<{ url: string }>('/api/drive/auth-url', { query: { weddingId, returnTo } })
       if (import.meta.client) window.location.href = result.url
     } catch (error) {
       console.error(error)

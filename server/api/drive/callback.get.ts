@@ -22,9 +22,19 @@ export default defineEventHandler(async (event) => {
   const db = getAdminDb()
   const stateRef = state ? db.doc(`driveOAuthStates/${state}`) : null
   const stateSnap = stateRef ? await stateRef.get() : null
-  const isAdminConnection = stateSnap?.exists && (stateSnap.data() as { weddingId?: string })?.weddingId === ADMIN_DRIVE_CONNECTION_ID
+  const initialState = stateSnap?.exists ? (stateSnap.data() as { weddingId?: string; returnTo?: string }) : undefined
+  const isAdminConnection = initialState?.weddingId === ADMIN_DRIVE_CONNECTION_ID
+  // Prefer bouncing back to the exact page the connection was started from
+  // (e.g. an admin managing a specific client wedding from
+  // /admin/wedding/{id}/guests) over the old fixed guess of
+  // /dashboard/guests, which sent an admin's own connections straight back
+  // out to the generic /admin via the auth middleware - only a same-origin
+  // relative path is ever trusted, never an absolute/protocol-relative URL.
+  const safeReturnTo = initialState?.returnTo && initialState.returnTo.startsWith('/') && !initialState.returnTo.startsWith('//')
+    ? initialState.returnTo
+    : (isAdminConnection ? '/admin' : '/dashboard/guests')
   const returnTo = (message: string) =>
-    sendRedirect(event, `${siteUrl}${isAdminConnection ? '/admin' : '/dashboard/guests'}?drive=${message}`)
+    sendRedirect(event, `${siteUrl}${safeReturnTo}?drive=${message}`)
 
   if (query.error) {
     return returnTo('cancelled')
@@ -54,8 +64,9 @@ export default defineEventHandler(async (event) => {
     } else {
       const weddingSnap = await db.doc(`weddings/${stateData.weddingId}`).get()
       const wedding = weddingSnap.data() as Record<string, unknown> | undefined
-      const slug = String(wedding?.slug || stateData.weddingId)
-      ;({ folderId, folderLink } = await ensureAppFolder(accessToken, `WeddingCard Exports - ${slug}`))
+      const content = wedding?.content as Record<string, unknown> | undefined
+      const coupleTitle = [content?.brideName, content?.groomName].filter(Boolean).join(' & ') || String(wedding?.slug || stateData.weddingId)
+      ;({ folderId, folderLink } = await ensureAppFolder(accessToken, clientRsvpFolderName(coupleTitle)))
     }
 
     await driveConnectionRef(stateData.weddingId).set({
