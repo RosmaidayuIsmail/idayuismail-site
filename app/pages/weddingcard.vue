@@ -1,10 +1,18 @@
 <template>
-  <div class="min-h-screen invite-backdrop text-white selection:bg-gold-400 selection:text-ink-950">
+  <div class="relative min-h-screen invite-backdrop text-white selection:bg-gold-400 selection:text-ink-950 overflow-x-hidden">
+    <!-- Same viewport-scaling glow as the personal hub (app/pages/index.vue)
+         - .invite-backdrop's own radial glow is quite faint on its own on a
+         big monitor, this gives it real presence beyond the petals. -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+      <div class="absolute -top-[15vw] -left-[10vw] w-[50vw] h-[50vw] max-w-[46rem] max-h-[46rem] bg-gold-400/15 blur-[100px] rounded-full" />
+      <div class="absolute top-[40vh] -right-[15vw] w-[45vw] h-[45vw] max-w-[42rem] max-h-[42rem] bg-indigo-400/10 blur-[100px] rounded-full" />
+      <div class="absolute bottom-[-15vh] left-[10vw] w-[40vw] h-[40vw] max-w-[38rem] max-h-[38rem] bg-gold-400/10 blur-[100px] rounded-full" />
+    </div>
     <PetalsBackground :count="18" />
 
     <!-- Sticky Glass Navbar -->
     <header class="fixed top-0 inset-x-0 z-50 transition-all duration-300" :class="{ 'bg-ink-950/70 backdrop-blur-md border-b border-white/10 shadow-lg py-3': scrolled, 'py-5': !scrolled }">
-      <div class="max-w-7xl mx-auto px-6 flex items-center justify-between">
+      <div class="max-w-[1600px] mx-auto px-6 flex items-center justify-between">
         <div class="flex items-center gap-4">
           <SiteLogoLink label="Back to Idayu Ismail" class="w-9 h-9" />
           <div class="w-px h-6 bg-white/10" />
@@ -24,7 +32,7 @@
     </header>
 
     <!-- Hero Section -->
-    <section class="relative z-10 pt-40 pb-20 px-6 max-w-6xl mx-auto text-center flex flex-col items-center">
+    <section class="relative z-10 pt-40 pb-20 px-6 max-w-[1400px] mx-auto text-center flex flex-col items-center">
       <div class="animate-fade-up inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-gold-400/30 bg-gold-400/10 text-gold-200 text-xs font-medium tracking-wider uppercase mb-8 backdrop-blur-sm">
         <span class="relative flex h-2 w-2">
           <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-gold-400 opacity-75"></span>
@@ -50,7 +58,7 @@
     </section>
 
     <!-- Bento Grid Features -->
-    <section class="relative z-10 max-w-7xl mx-auto px-6 py-24">
+    <section class="relative z-10 max-w-[1600px] mx-auto px-6 py-24">
       <ScrollReveal>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[280px]">
         
@@ -98,7 +106,7 @@
 
     <!-- Themes Showcase -->
     <section class="relative z-10 py-24 bg-ink-900/40 border-y border-white/5 backdrop-blur-sm">
-      <div class="max-w-7xl mx-auto px-6">
+      <div class="max-w-[1600px] mx-auto px-6">
         <ScrollReveal :delay="80">
         <div class="text-center mb-16">
           <h2 class="font-display text-4xl font-bold text-white mb-4">Curated Aesthetics</h2>
@@ -147,7 +155,7 @@
     
     <!-- Footer -->
     <footer class="relative z-10 border-t border-white/10 bg-ink-950/80 backdrop-blur-lg">
-      <div class="max-w-7xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="max-w-[1600px] mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div class="flex items-center gap-2">
           <UIcon name="i-heroicons-heart" class="w-5 h-5 text-gold-300" />
           <span class="font-display font-semibold text-white/80">WeddingCard</span>

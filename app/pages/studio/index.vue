@@ -1,14 +1,17 @@
 <template>
   <div class="relative min-h-screen text-ink-900 dark:text-gold-50 overflow-x-hidden">
-    <!-- Same ambient-glow treatment as the personal hub (app/pages/index.vue)
-         so a wide desktop viewport doesn't just read as bare margins either
-         side of the content column. -->
-    <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
-      <div class="absolute -top-24 -right-24 w-[28rem] h-[28rem] bg-emerald-400/10 dark:bg-emerald-500/10 blur-[120px] rounded-full" />
-      <div class="absolute bottom-0 -left-24 w-[24rem] h-[24rem] bg-gold-400/10 dark:bg-gold-500/10 blur-[120px] rounded-full" />
+    <!-- Same viewport-scaling ambient glow as the personal hub
+         (app/pages/index.vue) - vw-sized (not fixed rem) so it actually
+         fills a wide/ultrawide monitor instead of staying a small patch in
+         one corner, and fixed (not absolute) so it stays put as a full
+         backdrop regardless of how tall the page's content ends up. -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+      <div class="absolute -top-[15vw] -right-[15vw] w-[48vw] h-[48vw] max-w-[44rem] max-h-[44rem] bg-emerald-400/15 dark:bg-emerald-500/15 blur-[100px] rounded-full" />
+      <div class="absolute bottom-[-15vh] -left-[15vw] w-[42vw] h-[42vw] max-w-[38rem] max-h-[38rem] bg-gold-400/15 dark:bg-gold-500/15 blur-[100px] rounded-full" />
+      <div class="absolute top-[35vh] left-[35vw] w-[35vw] h-[35vw] max-w-[32rem] max-h-[32rem] bg-sky-400/10 dark:bg-sky-500/10 blur-[100px] rounded-full" />
     </div>
 
-    <header class="relative z-10 max-w-7xl mx-auto px-6 pt-8 pb-4 flex items-center justify-between gap-4">
+    <header class="relative z-10 max-w-[1600px] mx-auto px-6 pt-8 pb-4 flex items-center justify-between gap-4">
       <div class="flex items-center gap-3 min-w-0">
         <SiteLogoLink label="Back to Idayu Ismail" class="w-10 h-10" />
         <div class="min-w-0">
@@ -19,7 +22,7 @@
       <ThemeToggle />
     </header>
 
-    <main class="relative z-10 max-w-7xl mx-auto px-6 pb-20">
+    <main class="relative z-10 max-w-[1600px] mx-auto px-6 pb-20">
       <ClientOnly>
         <StudioPlansList />
         <template #fallback>
