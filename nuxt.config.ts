@@ -56,8 +56,8 @@ export default defineNuxtConfig({
         // the file at the same URL changes - bump this suffix any time the
         // favicon image itself changes again, to force every browser to
         // treat it as a new resource instead of reusing its old icon.
-        { rel: 'icon', type: 'image/svg+xml', href: '/idayuismail-logo.svg?v=2' },
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico?v=2' }
+        { rel: 'icon', type: 'image/svg+xml', href: '/idayuismail-logo.svg?v=3' },
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico?v=3' }
       ]
     },
     pageTransition: { name: 'page', mode: 'out-in' }
