@@ -81,6 +81,12 @@ export function ensurePortfolioSchema() {
         created_at TEXT DEFAULT CURRENT_TIMESTAMP
       );
     `)
+    // Threaded replies: null = a top-level comment, otherwise the id of the
+    // top-level comment it replies to. Replies are flattened to one level
+    // (a reply to a reply still points at the original top-level comment),
+    // matching Instagram's own comment UI - keeps both the query and the
+    // rendering simple.
+    try { await portfolioDb.execute(`ALTER TABLE moment_comments ADD COLUMN parent_id INTEGER`) } catch { /* already exists */ }
     await portfolioDb.execute(`
       CREATE TABLE IF NOT EXISTS site_text (
         key TEXT PRIMARY KEY,

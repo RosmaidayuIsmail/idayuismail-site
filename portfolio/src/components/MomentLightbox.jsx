@@ -1,6 +1,15 @@
 import { useEffect, useState } from 'react'
-import { X, Heart, Send } from 'lucide-react'
+import { X, Heart, Send, CornerDownRight } from 'lucide-react'
 import './MomentLightbox.css'
+
+// Groups the flat comments array (each carrying parentId, or null for a
+// top-level comment) into { ...comment, replies: [...] } - replies are
+// always exactly one level deep since the server already flattens a
+// reply-to-a-reply onto the original top-level comment's id.
+function groupComments(comments) {
+  const topLevel = comments.filter((c) => !c.parentId)
+  return topLevel.map((c) => ({ ...c, replies: comments.filter((r) => r.parentId === c.id) }))
+}
 
 function timeAgo(dateStr) {
   const diff = (Date.now() - new Date(dateStr.replace(' ', 'T') + 'Z').getTime()) / 1000
@@ -18,6 +27,7 @@ export default function MomentLightbox({ moment, ui, onClose }) {
   const [name, setName] = useState('')
   const [message, setMessage] = useState('')
   const [posting, setPosting] = useState(false)
+  const [replyingTo, setReplyingTo] = useState(null)
 
   useEffect(() => {
     setLiked(sessionStorage.getItem(`liked-moment-${moment.id}`) === '1')
@@ -51,14 +61,20 @@ export default function MomentLightbox({ moment, ui, onClose }) {
     e.preventDefault()
     if (!message.trim()) return
     setPosting(true)
+    // Flatten client-side too, matching the server: replying to a reply
+    // attaches to that reply's own parent (the original top-level comment),
+    // so the optimistic update below doesn't briefly show two levels of
+    // nesting before a refetch would collapse it back to one.
+    const parentId = replyingTo ? (replyingTo.parentId || replyingTo.id) : null
     try {
       await fetch(`/api/portfolio/moments/${moment.id}/comments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, message }),
+        body: JSON.stringify({ name, message, parentId }),
       })
-      setComments((c) => [...c, { name: name || 'Anonymous', message, createdAt: new Date().toISOString() }])
+      setComments((c) => [...c, { name: name || 'Anonymous', message, createdAt: new Date().toISOString(), parentId }])
       setMessage('')
+      setReplyingTo(null)
     } catch {
       // leave the draft in place so they can retry
     } finally {
@@ -86,16 +102,33 @@ export default function MomentLightbox({ moment, ui, onClose }) {
           </button>
 
           <div className="moment-comments">
-            {comments.map((c, i) => (
-              <div key={i} className="moment-comment">
-                <span className="moment-comment-name">{c.name}</span>
-                <span className="moment-comment-message">{c.message}</span>
+            {groupComments(comments).map((c, i) => (
+              <div key={i} className="moment-comment-thread">
+                <div className="moment-comment">
+                  <span className="moment-comment-name">{c.name}</span>
+                  <span className="moment-comment-message">{c.message}</span>
+                  <button type="button" className="moment-comment-reply-btn" onClick={() => setReplyingTo(c)}>Reply</button>
+                </div>
+                {c.replies.map((r, j) => (
+                  <div key={j} className="moment-comment moment-comment-reply">
+                    <CornerDownRight size={12} className="moment-comment-reply-icon" />
+                    <span className="moment-comment-name">{r.name}</span>
+                    <span className="moment-comment-message">{r.message}</span>
+                    <button type="button" className="moment-comment-reply-btn" onClick={() => setReplyingTo(r)}>Reply</button>
+                  </div>
+                ))}
               </div>
             ))}
             {comments.length === 0 && <p className="moment-comments-empty">No replies yet — be the first.</p>}
           </div>
 
           <form className="moment-comment-form" onSubmit={postComment}>
+            {replyingTo && (
+              <div className="moment-replying-to">
+                Replying to <strong>{replyingTo.name}</strong>
+                <button type="button" onClick={() => setReplyingTo(null)} aria-label="Cancel reply"><X size={13} /></button>
+              </div>
+            )}
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -106,7 +139,7 @@ export default function MomentLightbox({ moment, ui, onClose }) {
               <input
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="Say something…"
+                placeholder={replyingTo ? `Reply to ${replyingTo.name}…` : 'Say something…'}
                 maxLength={500}
               />
               <button type="submit" disabled={posting || !message.trim()} aria-label="Send">

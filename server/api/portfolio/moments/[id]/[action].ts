@@ -6,6 +6,7 @@ function rowToComment(row: any) {
     name: row.name || 'Anonymous',
     message: row.message,
     createdAt: row.created_at,
+    parentId: row.parent_id ?? null,
   }
 }
 
@@ -30,15 +31,27 @@ async function handleComments(event: any, id: string) {
   }
 
   if (event.method === 'POST') {
-    const { name, message } = (await readBody(event)) || {}
+    const { name, message, parentId } = (await readBody(event)) || {}
     if (!message || !message.trim()) {
       setResponseStatus(event, 400)
       return { error: 'A comment needs a message.' }
     }
+    // Flatten replies-to-replies: if parentId itself has a parent, attach
+    // the new comment to that original top-level comment instead - keeps
+    // the thread exactly one level deep, matching the frontend's rendering.
+    let resolvedParentId: number | null = null
+    if (parentId) {
+      const parentRow = await portfolioDb.execute({
+        sql: 'SELECT id, parent_id FROM moment_comments WHERE id = ? AND moment_id = ?',
+        args: [parentId, id],
+      })
+      const parent = parentRow.rows[0] as any
+      if (parent) resolvedParentId = parent.parent_id || parent.id
+    }
     try {
       await portfolioDb.execute({
-        sql: 'INSERT INTO moment_comments (moment_id, name, message) VALUES (?, ?, ?)',
-        args: [id, (name || '').trim().slice(0, 60) || null, message.trim().slice(0, 500)],
+        sql: 'INSERT INTO moment_comments (moment_id, name, message, parent_id) VALUES (?, ?, ?, ?)',
+        args: [id, (name || '').trim().slice(0, 60) || null, message.trim().slice(0, 500), resolvedParentId],
       })
       setResponseStatus(event, 201)
       return { ok: true }
