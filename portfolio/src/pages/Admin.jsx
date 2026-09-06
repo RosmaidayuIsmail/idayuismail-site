@@ -1,25 +1,42 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowLeft, LogOut, User, Briefcase, Milestone, BookOpen, Camera, Plus } from 'lucide-react'
+import { ArrowLeft, LogOut, User, Briefcase, Milestone, BookOpen, Camera, Plus, Sparkles, Award, Type } from 'lucide-react'
 import { useAuth, api } from '../components/admin/adminApi'
 import Login from '../components/admin/Login'
 import ProfileForm from '../components/admin/ProfileForm'
 import ProjectForm from '../components/admin/ProjectForm'
 import JourneyForm from '../components/admin/JourneyForm'
 import LearningForm from '../components/admin/LearningForm'
+import ServiceForm from '../components/admin/ServiceForm'
+import CertificationForm from '../components/admin/CertificationForm'
+import SiteTextForm from '../components/admin/SiteTextForm'
 import { MomentComposer, MomentItem } from '../components/admin/MomentForm'
 import './Admin.css'
 
 const EMPTY_PROJECT = { slug: '', title: { en: '', ko: '', zh: '' }, body: { en: '', ko: '', zh: '' }, more: { en: '', ko: '', zh: '' }, tags: '', link: '', images: '', sortOrder: 0 }
 const EMPTY_LEARNING = { slug: '', title: { en: '', ko: '', zh: '' }, body: { en: '', ko: '', zh: '' }, sortOrder: 0 }
 const EMPTY_JOURNEY = { slug: '', date: '', title: { en: '', ko: '', zh: '' }, body: { en: '', ko: '', zh: '' }, sortOrder: 0 }
+const EMPTY_SERVICE = { glyph: '', title: { en: '', ko: '', zh: '' }, body: { en: '', ko: '', zh: '' }, sortOrder: 0 }
+const EMPTY_CERTIFICATION = { text: { en: '', ko: '', zh: '' }, sortOrder: 0 }
 
-const TABS = [
-  { key: 'profile', label: 'Profile', Icon: User },
-  { key: 'projects', label: 'Work', Icon: Briefcase },
-  { key: 'moments', label: 'Moments', Icon: Camera },
-  { key: 'journey', label: 'Journey', Icon: Milestone },
-  { key: 'learning', label: 'Learning', Icon: BookOpen },
+// Grouped so the tab row stays scannable now that there are 7 of them -
+// "Content" is everything editable as records, "Site text" is the flat
+// chrome-text settings blob (SiteTextForm), "Live" is guest-facing feeds.
+const TAB_GROUPS = [
+  { label: 'Content', tabs: [
+    { key: 'profile', label: 'Profile', Icon: User },
+    { key: 'projects', label: 'Work', Icon: Briefcase },
+    { key: 'journey', label: 'Journey', Icon: Milestone },
+    { key: 'learning', label: 'Learning', Icon: BookOpen },
+    { key: 'services', label: 'Services', Icon: Sparkles },
+    { key: 'certifications', label: 'Certifications', Icon: Award },
+  ] },
+  { label: 'Site text', tabs: [
+    { key: 'siteText', label: 'Text & labels', Icon: Type },
+  ] },
+  { label: 'Live', tabs: [
+    { key: 'moments', label: 'Moments', Icon: Camera },
+  ] },
 ]
 
 function Dashboard({ apiKey, onLogout }) {
@@ -28,19 +45,28 @@ function Dashboard({ apiKey, onLogout }) {
   const [learning, setLearning] = useState([])
   const [journey, setJourney] = useState([])
   const [moments, setMoments] = useState([])
+  const [services, setServices] = useState([])
+  const [certifications, setCertifications] = useState([])
   const [newProject, setNewProject] = useState(false)
   const [newLearning, setNewLearning] = useState(false)
   const [newJourney, setNewJourney] = useState(false)
+  const [newService, setNewService] = useState(false)
+  const [newCertification, setNewCertification] = useState(false)
 
   const refresh = () => {
     api('projects').then(setProjects).catch(() => {})
     api('learning').then(setLearning).catch(() => {})
     api('journey').then(setJourney).catch(() => {})
     api('moments').then(setMoments).catch(() => {})
+    api('services').then(setServices).catch(() => {})
+    api('certifications').then(setCertifications).catch(() => {})
   }
   useEffect(refresh, [])
 
-  const counts = { projects: projects.length, journey: journey.length, learning: learning.length, moments: moments.length }
+  const counts = {
+    projects: projects.length, journey: journey.length, learning: learning.length, moments: moments.length,
+    services: services.length, certifications: certifications.length,
+  }
 
   return (
     <div className="admin">
@@ -55,12 +81,19 @@ function Dashboard({ apiKey, onLogout }) {
           <p className="admin-subtitle">Manage everything shown on your site — changes go live immediately, no rebuild needed.</p>
         </div>
 
-        <div className="admin-tabs">
-          {TABS.map(({ key, label, Icon }) => (
-            <button key={key} className={tab === key ? 'active' : ''} onClick={() => setTab(key)}>
-              <Icon size={15} /> {label}
-              {counts[key] !== undefined && <span className="admin-tab-count">{counts[key]}</span>}
-            </button>
+        <div className="admin-tab-groups">
+          {TAB_GROUPS.map((group) => (
+            <div key={group.label}>
+              <span className="admin-tab-group-label">{group.label}</span>
+              <div className="admin-tabs">
+                {group.tabs.map(({ key, label, Icon }) => (
+                  <button key={key} className={tab === key ? 'active' : ''} onClick={() => setTab(key)}>
+                    <Icon size={15} /> {label}
+                    {counts[key] !== undefined && <span className="admin-tab-count">{counts[key]}</span>}
+                  </button>
+                ))}
+              </div>
+            </div>
           ))}
         </div>
 
@@ -99,6 +132,26 @@ function Dashboard({ apiKey, onLogout }) {
               : <button className="admin-btn primary admin-add-btn" onClick={() => setNewLearning(true)}><Plus size={14} /> Add entry</button>}
           </div>
         )}
+
+        {tab === 'services' && (
+          <div className="admin-list">
+            {services.map((s) => <ServiceForm key={s.id} initial={s} onSaved={() => { refresh(); setNewService(false) }} apiKey={apiKey} />)}
+            {newService
+              ? <ServiceForm initial={EMPTY_SERVICE} onSaved={() => { refresh(); setNewService(false) }} apiKey={apiKey} defaultOpen />
+              : <button className="admin-btn primary admin-add-btn" onClick={() => setNewService(true)}><Plus size={14} /> Add service</button>}
+          </div>
+        )}
+
+        {tab === 'certifications' && (
+          <div className="admin-list">
+            {certifications.map((c) => <CertificationForm key={c.id} initial={c} onSaved={() => { refresh(); setNewCertification(false) }} apiKey={apiKey} />)}
+            {newCertification
+              ? <CertificationForm initial={EMPTY_CERTIFICATION} onSaved={() => { refresh(); setNewCertification(false) }} apiKey={apiKey} defaultOpen />
+              : <button className="admin-btn primary admin-add-btn" onClick={() => setNewCertification(true)}><Plus size={14} /> Add certification</button>}
+          </div>
+        )}
+
+        {tab === 'siteText' && <SiteTextForm apiKey={apiKey} />}
       </div>
     </div>
   )

@@ -44,7 +44,12 @@
 
 @keyframes admin-pop-in { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: scale(1); } }
 
-.admin-tabs { display: flex; gap: .6rem; margin-bottom: 2rem; flex-wrap: wrap; }
+.admin-tab-groups { display: flex; flex-direction: column; gap: 1.1rem; margin-bottom: 2rem; }
+.admin-tab-group-label {
+  font-family: var(--sans); font-size: .68rem; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: .5rem; display: block;
+}
+.admin-tabs { display: flex; gap: .6rem; margin-bottom: 0; flex-wrap: wrap; }
 .admin-tabs button {
   display: inline-flex; align-items: center; gap: .5rem;
   background: var(--bg-panel); border: 1px solid var(--border); color: var(--muted);
@@ -155,6 +160,11 @@
 .admin-lang-textarea:focus { outline: none; background: #1c1a26; }
 
 .admin-actions { display: flex; align-items: center; gap: 1rem; margin-top: .8rem; flex-wrap: wrap; }
+.admin-actions-sticky {
+  position: sticky; bottom: 1.2rem; z-index: 5;
+  background: var(--bg-panel); border: 1px solid var(--border); border-radius: 8px;
+  padding: 1rem 1.3rem; box-shadow: 0 12px 30px -12px rgba(0,0,0,.6);
+}
 .admin-btn {
   display: inline-flex; align-items: center; gap: .4rem;
   font-family: var(--sans); font-size: .82rem; letter-spacing: .03em;
