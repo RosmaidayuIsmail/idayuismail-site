@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowLeft, LogOut, User, Briefcase, Milestone, BookOpen, Camera, Plus, Sparkles, Award, Type } from 'lucide-react'
+import { ArrowLeft, LogOut, User, Briefcase, Milestone, BookOpen, Camera, Plus, Sparkles, Award, Type, Film } from 'lucide-react'
 import { useAuth, api } from '../components/admin/adminApi'
 import Login from '../components/admin/Login'
 import ProfileForm from '../components/admin/ProfileForm'
@@ -11,6 +11,7 @@ import ServiceForm from '../components/admin/ServiceForm'
 import CertificationForm from '../components/admin/CertificationForm'
 import SiteTextForm from '../components/admin/SiteTextForm'
 import { MomentComposer, MomentItem } from '../components/admin/MomentForm'
+import { StoryComposer, StoryItem } from '../components/admin/StoryForm'
 import './Admin.css'
 
 const EMPTY_PROJECT = { slug: '', title: { en: '', ko: '', zh: '' }, body: { en: '', ko: '', zh: '' }, more: { en: '', ko: '', zh: '' }, tags: '', link: '', images: '', sortOrder: 0 }
@@ -36,6 +37,7 @@ const TAB_GROUPS = [
   ] },
   { label: 'Live', tabs: [
     { key: 'moments', label: 'Moments', Icon: Camera },
+    { key: 'stories', label: 'Stories', Icon: Film },
   ] },
 ]
 
@@ -45,6 +47,7 @@ function Dashboard({ apiKey, onLogout }) {
   const [learning, setLearning] = useState([])
   const [journey, setJourney] = useState([])
   const [moments, setMoments] = useState([])
+  const [stories, setStories] = useState([])
   const [services, setServices] = useState([])
   const [certifications, setCertifications] = useState([])
   const [newProject, setNewProject] = useState(false)
@@ -58,6 +61,7 @@ function Dashboard({ apiKey, onLogout }) {
     api('learning').then(setLearning).catch(() => {})
     api('journey').then(setJourney).catch(() => {})
     api('moments').then(setMoments).catch(() => {})
+    api('stories').then(setStories).catch(() => {})
     api('services').then(setServices).catch(() => {})
     api('certifications').then(setCertifications).catch(() => {})
   }
@@ -65,7 +69,7 @@ function Dashboard({ apiKey, onLogout }) {
 
   const counts = {
     projects: projects.length, journey: journey.length, learning: learning.length, moments: moments.length,
-    services: services.length, certifications: certifications.length,
+    services: services.length, certifications: certifications.length, stories: stories.length,
   }
 
   return (
@@ -112,6 +116,14 @@ function Dashboard({ apiKey, onLogout }) {
           <div className="admin-list">
             <MomentComposer onPosted={refresh} apiKey={apiKey} />
             {moments.map((m) => <MomentItem key={m.id} moment={m} onDeleted={refresh} apiKey={apiKey} />)}
+          </div>
+        )}
+
+        {tab === 'stories' && (
+          <div className="admin-list">
+            <StoryComposer onPosted={refresh} apiKey={apiKey} />
+            {stories.map((s) => <StoryItem key={s.id} story={s} onDeleted={refresh} apiKey={apiKey} />)}
+            {stories.length === 0 && <p className="admin-hint">No active stories - they disappear automatically after 24 hours.</p>}
           </div>
         )}
 

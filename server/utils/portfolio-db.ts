@@ -109,6 +109,19 @@ export function ensurePortfolioSchema() {
         sort_order INTEGER DEFAULT 0
       );
     `)
+    // No expires_at column - expiry is computed at read time (created_at
+    // older than 24h) and lazily cleaned up by stories/index.ts's GET
+    // handler, since this site has nowhere near the volume to need a cron
+    // job for it.
+    await portfolioDb.execute(`
+      CREATE TABLE IF NOT EXISTS stories (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        media_url TEXT NOT NULL,
+        media_type TEXT NOT NULL DEFAULT 'image',
+        caption TEXT,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP
+      );
+    `)
     await seedSiteTextDefaults()
   })()
   return schemaReady

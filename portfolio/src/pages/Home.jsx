@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import StoriesBar from '../components/StoriesBar'
 import Hero from '../components/Hero'
 import About from '../components/About'
 import Work from '../components/Work'
@@ -32,6 +33,7 @@ export default function Home({ ui, setActive }) {
 
   return (
     <>
+      <StoriesBar />
       <Hero ui={ui} profile={profile} />
       <About ui={ui} profile={profile} />
       <Work ui={ui} projects={projects} />
